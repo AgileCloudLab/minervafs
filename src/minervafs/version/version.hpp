@@ -13,7 +13,7 @@ class version
 {
 
 public:
-    version();
+    version() = default;
     version(const std::string& version_path);
 
     void store_version(const std::string& file_path, const std::vector<uint8_t>& data);

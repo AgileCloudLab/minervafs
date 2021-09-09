@@ -36,7 +36,7 @@ def configure(cnf) :
     
 def build(bld):
 
-    libs = ['fuse3']
+    libs = ['fuse3', 'fmt']
 
     if sys.platform == 'linux' or sys.platform == 'linux2':
         libs.append('stdc++fs')

@@ -3,18 +3,20 @@
 #include <tartarus/writers.hpp>
 #include <tartarus/readers.hpp>
 
+#include <fmt/core.h>
+
 #include <filesystem>
 
 namespace minerva
 {
-    version::version() {}
 
     version::version(const std::string& version_path)
     {
         m_version_path = version_path;
+        
         if (version_path.size() > 0 && version_path.substr(version_path.size() - 1) != "/")
         {
-            m_version_path = m_version_path + "/";
+            m_version_path = fmt::format("{}/", m_version_path);
         }
 
         if (!std::filesystem::exists(m_version_path))
@@ -27,7 +29,7 @@ namespace minerva
     {
         if (!std::filesystem::exists(m_version_path + file_path))
         {
-            std::filesystem::create_directories(m_version_path + file_path);
+            std::filesystem::create_directories(fmt::format("{}{}", m_version_path, file_path));
         }
         
         std::string write_path = create_version_path(file_path);
@@ -89,14 +91,14 @@ namespace minerva
 
     std::string version::create_version_path(const std::string& path, const uint32_t version)
     {
-        if (path.at(path.size() - 1) != '/')
+        std::string pattern = "{}{}{}";
+        
+        if (path.at(path.length() - 1) != '/')
         {
-            return m_version_path + path + "/" + std::to_string(version);
+            pattern = "{}{}/{}";
         }
-        else
-        {
-            return m_version_path + path + std::to_string(version);
-        }
+
+        return fmt::format(pattern, m_version_path, path, std::to_string(version)); 
     }
 
     std::string version::create_version_path(const std::string& path)
@@ -107,6 +109,6 @@ namespace minerva
     bool version::is_first_version(const std::string& path)
     {
         // If exists it is not the first version 
-        return std::filesystem::exists(path) ? false : true;
+        return !std::filesystem::exists(path);
     }    
 }

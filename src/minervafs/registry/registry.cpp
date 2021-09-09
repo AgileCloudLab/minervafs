@@ -12,7 +12,6 @@
 
 namespace minerva
 {
-    registry::registry() {}
 
     registry::registry(const nlohmann::json& config)
     {

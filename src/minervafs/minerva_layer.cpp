@@ -59,7 +59,7 @@ static nlohmann::json minverva_compression_config;
 static nlohmann::json coding_config;
 static nlohmann::json log_config; 
 
-static minerva::registry registry; 
+static minerva::registry registry;
 static codewrapper::codewrapper* coder;
 static aloha::aloha alog; 
 
@@ -1124,9 +1124,6 @@ static void setup()
         std::system((MKDIR + " " + temp_directory).c_str());
     }
 
-//    nlohmann::json indexing_config;
-//    indexing_config["indexing_path"] = (indexing_directory);
-    
     nlohmann::json minerva_config;
     minerva_config["fileout_path"] = (base_directory + "/");
     minerva_config["index_path"] = (indexing_directory);    
@@ -1501,14 +1498,9 @@ int decode(const char* path)
     fingerprint_basis.clear();
     pairs.clear();
 
-//    codewrapper::codewrapper code(config);
     auto data = coder->decode(coded_pairs);
     coded_pairs.clear();
 
-//    codewrapper::codewrapper* code = get_hamming_codec(coded_data.config());
-// //     // std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> dd = coded_data.basis_and_deviation_pairs();
-// // //    auto data = code->decode(coded_data.basis_and_deviation_pairs());
-//    auto data = code->decode(dd);
     
     // Make sure the parent directory is present for the file to be decoded in the right place
     std::filesystem::path target_path(minerva_entry_temp_path);

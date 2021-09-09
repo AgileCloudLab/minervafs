@@ -14,7 +14,7 @@ namespace minerva
 class registry
 {
 public:
-    registry();    
+    registry() = default;    
     registry(const nlohmann::json& config);
 
     void write_file(const std::string& path, const std::vector<uint8_t>& data);
