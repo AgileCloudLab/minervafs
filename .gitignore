@@ -44,3 +44,4 @@ build_current
 resolve_symlinks
 .vscode
 .waf*
+resolved_dependencies/
