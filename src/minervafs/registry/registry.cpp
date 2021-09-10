@@ -15,6 +15,7 @@ namespace minerva
 
     registry::registry(const nlohmann::json& config)
     {
+        std::cout << "CREATING REGISTRY\n"; 
 
         if (config.find("fileout_path") == config.end())             
         {
@@ -53,15 +54,22 @@ namespace minerva
             m_minor_length = config["minor_group_length"].get<size_t>();            
         }
 
-        if (config.find("version_path") == config.end())
+        m_versioning = config.contains("versioning");
+
+        m_versioning ? std::cout << "ENABLING VERSIONING\n" : std::cout << "ARRHHHHG\n"; 
+        if (m_versioning)
         {
-            m_versioning = false;
-        }
-        else
-        {
-            // TODO load version config and create versioning
-            m_versioning = true;
-            m_version = minerva::version(config["version"].get<std::string>());
+            auto version_config = config["versioning"].get<nlohmann::json>();
+
+            if (version_config.contains("version_path"))
+            {
+                m_version = minerva::version(version_config["version_path"].get<std::string>()); 
+            }
+            else
+            {
+                throw std::runtime_error("version path not found: " + version_config.dump()); 
+            }
+            
         }
 
         if (config.find("compression") != config.end())

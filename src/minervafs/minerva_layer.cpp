@@ -48,7 +48,7 @@ static const std::string minervafs_registry = "/.registry/";
 static const std::string minervafs_identifier_register = "/identifiers";//"/.identifiers";
 static const std::string minervafs_config = "/.minervafs_config";
 static const std::string minervafs_temp = "/.temp"; // For temporarly decode files
-static const std::vector<std::string> IGNORE = {".indexing", ".minervafs_config", ".temp"};
+static const std::vector<std::string> IGNORE = {".indexing", ".minervafs_config", ".temp", ".versioning", ".version"};
 
 static std::string minerva_config_path = ""; 
 
@@ -317,22 +317,6 @@ static void register_open_file(std::string path)
     }
 }
 
-// [[deprecated]]
-// static void register_closed_file(std::string path)
-// {
-//     std::lock_guard<std::mutex> lock(of_mutex);
-//     auto entry = open_files.find(path);
-//     if (entry == open_files.end())
-//     {
-//         throw new std::logic_error("Cannot find file that must be closed");
-//     }
-//     entry->second--;
-//     if (entry->second == 0)
-//     {
-//         open_files.erase(entry);
-//         unlink(path.c_str());
-//     }
-// }
 
 int minerva_create(const char *path, mode_t mode, struct fuse_file_info* fi)
 {
@@ -1088,7 +1072,6 @@ static void setup()
         set_config_path(_spath); 
     }
     
-
     load_config(minerva_config_path);
 
     alog = aloha::aloha();
@@ -1136,6 +1119,7 @@ static void setup()
     
     if (minverva_versioning)
     {
+        std::cout << "jklasjdkljadslkjflksajjfklasdjflkasdjlkfsdjlkjfkladsjlk\n";
         minerva_config["versioning"] = minerva_versioning_config;
     }
 
