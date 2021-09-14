@@ -54,22 +54,18 @@ namespace minerva
             m_minor_length = config["minor_group_length"].get<size_t>();            
         }
 
-        m_versioning = config.contains("versioning");
-
-        m_versioning ? std::cout << "ENABLING VERSIONING\n" : std::cout << "ARRHHHHG\n"; 
-        if (m_versioning)
+        if (config.contains("versioning"))
         {
-            auto version_config = config["versioning"].get<nlohmann::json>();
-
+            auto version_config = config["versioning"].get<nlohmann::json>(); 
             if (version_config.contains("version_path"))
             {
-                m_version = minerva::version(version_config["version_path"].get<std::string>()); 
+                m_version = minerva::version(version_config["version_path"].get<std::string>());
+                m_versioning = true; 
             }
             else
             {
-                throw std::runtime_error("version path not found: " + version_config.dump()); 
+                m_versioning = false; 
             }
-            
         }
 
         if (config.find("compression") != config.end())
@@ -124,11 +120,12 @@ namespace minerva
             // TODO check version path
             m_version.store_version(path, data);
         }
-        else
-        {
-//            tartarus::writers::vector_disk_writer(m_fileout_path + "/" + path, data, true);
-            tartarus::writers::vector_disk_writer(path, data);
-        }
+        tartarus::writers::vector_disk_writer(path, data);
+//         else
+//         {
+// //            tartarus::writers::vector_disk_writer(m_fileout_path + "/" + path, data, true);
+//             tartarus::writers::vector_disk_writer(path, data);
+//         }
         
     }
 
