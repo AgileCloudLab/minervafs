@@ -7,11 +7,7 @@
         "mgf": 256, 
         "code_type": 1
     },
-    "compression" : {
-      "uncompressed_size" : 4096,
-      "algorithm": 0,
-      "configuration": {
-        "level": 6
-      }
+    "versioning": {
+      "version_path": "/home/tools/.minervafs/.version"
     }
 }

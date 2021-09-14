@@ -1,11 +1,16 @@
 #include "utils.hpp"
 
+#include <fmt/core.h>
+
 #include <sys/types.h>
 #include <unistd.h>
 
 #include <filesystem>
 #include <iomanip>
 #include <string>
+
+#include <cstdlib>
+
 
 std::string get_binary_directory()
 {
@@ -26,3 +31,10 @@ std::string to_hexadecimal(std::vector<uint8_t> data)
     }
     return representation.str();
 }
+
+void create_directory(const std::string& path)
+{
+    std::string cmd = fmt::format("mkdir -p {}", path);
+    std::system(cmd.c_str()); 
+}
+    

@@ -1,11 +1,15 @@
 #include "version.hpp"
 
+#include "../utils.hpp"
+
 #include <tartarus/writers.hpp>
 #include <tartarus/readers.hpp>
 
 #include <fmt/core.h>
 
 #include <filesystem>
+
+#include <cstdlib>
 
 namespace minerva
 {
@@ -21,20 +25,30 @@ namespace minerva
 
         if (!std::filesystem::exists(m_version_path))
         {
-            std::filesystem::create_directories(m_version_path);
+            create_directory(m_version_path);
         }
     }
 
     void version::store_version(const std::string& file_path, const std::vector<uint8_t>& data)
     {
-        if (!std::filesystem::exists(m_version_path + file_path))
+        std::string full_path;
+
+        if (file_path.at(0) == '/')
         {
-            std::filesystem::create_directories(fmt::format("{}{}", m_version_path, file_path));
+            full_path = fmt::format("{}{}", m_version_path, file_path.substr(1, file_path.length())); 
+        }
+        
+        if (!std::filesystem::exists(full_path))
+        {
+            create_directory(full_path); 
+//            std::filesystem::create_directories(fmt::format("{}{}", m_version_path, file_path));
         }
         
         std::string write_path = create_version_path(file_path);
 
-        tartarus::writers::vector_disk_writer(write_path, data); 
+        fmt::print("HER\n"); 
+        tartarus::writers::vector_disk_writer(write_path, data);
+        fmt::print("HER2\n");         
     }
 
     std::vector<uint8_t> version::load_version(std::string file_path)
@@ -91,14 +105,27 @@ namespace minerva
 
     std::string version::create_version_path(const std::string& path, const uint32_t version)
     {
-        std::string pattern = "{}{}{}";
-        
-        if (path.at(path.length() - 1) != '/')
+
+        std::string base = "{}{}";
+
+        if (path.at(0) == '/')
         {
-            pattern = "{}{}/{}";
+            base = fmt::format(base, m_version_path, path.substr(1, path.length())); 
+        }
+        else
+        {
+            base = fmt::format(base, m_version_path, path);             
+        }
+        
+        
+        std::string pattern = "{}{}";
+        
+        if (base.at(base.length() - 1) != '/')
+        {
+            pattern = "{}/{}";
         }
 
-        return fmt::format(pattern, m_version_path, path, std::to_string(version)); 
+        return fmt::format(pattern, base, std::to_string(version)); 
     }
 
     std::string version::create_version_path(const std::string& path)

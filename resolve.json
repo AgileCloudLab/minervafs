@@ -48,5 +48,14 @@
         "method": "semver",
         "resolver": "git",
         "name": "aloha"
-    }    
+    },
+    {
+        "sources": [
+            "github.com/AgileCloudLab/ananke.git"
+        ],
+        "major": 2,
+        "method": "semver",
+        "resolver": "git",
+        "name": "ananke"
+    }     
 ]

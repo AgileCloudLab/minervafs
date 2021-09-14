@@ -15,6 +15,7 @@ namespace minerva
 
     registry::registry(const nlohmann::json& config)
     {
+        std::cout << "CREATING REGISTRY\n"; 
 
         if (config.find("fileout_path") == config.end())             
         {
@@ -53,43 +54,43 @@ namespace minerva
             m_minor_length = config["minor_group_length"].get<size_t>();            
         }
 
-        if (config.find("version_path") == config.end())
+        if (config.contains("versioning"))
         {
-            m_versioning = false;
-        }
-        else
-        {
-            // TODO load version config and create versioning
-            m_versioning = true;
-            m_version = minerva::version(config["version"].get<std::string>());
-        }
-
-        if (config.find("compression") != config.end())
-        {
-
-            auto compression_config = config["compression"].get<nlohmann::json>();
-
-            if (compression_config.find("basis_size") == compression_config.end())
+            auto version_config = config["versioning"].get<nlohmann::json>(); 
+            if (version_config.contains("version_path"))
             {
-                m_compressor = minerva::compressor(compression_config["algorithm"].get<minerva::compressor_algorithm>());
+                m_version = minerva::version(version_config["version_path"].get<std::string>());
+                m_versioning = true; 
             }
             else
             {
-                auto algorithm = compression_config["algorithm"].get<minerva::compressor_algorithm>();
-                auto basis_size = compression_config["basis_size"].get<size_t>();
-
-                if (compression_config.find("level") != compression_config.end())
-                {
-                    m_compressor = minerva::compressor(algorithm, basis_size,
-                                                       compression_config["level"].get<uint8_t>());
-                }
-                else
-                {
-                    m_compressor = minerva::compressor(algorithm, basis_size);
-                }
-                
-
+                m_versioning = false; 
             }
+        }
+
+        if (config.contains("compression"))
+        {          
+            auto compression_config = config["compression"].get<nlohmann::json>();
+
+            if (!compression_config.contains("uncompressed_size"))
+            {
+                // todo throw error
+            }
+            
+            if (!compression_config.contains("algorithm"))
+            {
+                // Todo throw error
+            }
+
+            if (!compression_config.contains("configuration"))
+            {
+                // TODO throw error
+            }
+
+            m_uncompressed_size = compression_config["uncompressed_size"].get<size_t>();
+            m_compression_algorithm = compression_config["algorithm"].get<ananke::algorithm>();
+            m_compression_config = compression_config["configuration"].get<nlohmann::json>(); 
+                       
             std::cout << "compression on" << std::endl;            
             m_compression = true; 
         }
@@ -116,11 +117,12 @@ namespace minerva
             // TODO check version path
             m_version.store_version(path, data);
         }
-        else
-        {
-//            tartarus::writers::vector_disk_writer(m_fileout_path + "/" + path, data, true);
-            tartarus::writers::vector_disk_writer(path, data);
-        }
+        tartarus::writers::vector_disk_writer(path, data);
+//         else
+//         {
+// //            tartarus::writers::vector_disk_writer(m_fileout_path + "/" + path, data, true);
+//             tartarus::writers::vector_disk_writer(path, data);
+//         }
         
     }
 
@@ -163,11 +165,10 @@ namespace minerva
             auto basis = it->second;
             if (m_compression)
             {
-                std::cout << "ladidadi da" << std::endl;
-                m_compressor.compress(basis);
+                auto res = ananke::compress(m_compression_algorithm, m_compression_config, basis);
+                basis = res.second; 
             }
 
-//            tartarus::writers::vector_disk_writer(basis_path.string(), it->second, true);            
             tartarus::writers::vector_disk_writer(basis_path.string(), basis);
             if (m_in_memory)
             {
@@ -183,7 +184,7 @@ namespace minerva
             auto basis = tartarus::readers::vector_disk_reader(get_basis_path(it->first));
             if (m_compression)
             {
-                m_compressor.uncompress(basis);
+                basis = ananke::decompress(m_compression_algorithm, m_compression_config, basis, m_uncompressed_size); 
             }
             
             fingerprint_basis[it->first] = basis;

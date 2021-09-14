@@ -30,3 +30,6 @@ std::string get_binary_directory();
  * @returns A hexadecimal representation of the vector
  */
 std::string to_hexadecimal(std::vector<uint8_t> data);
+
+void create_directory(const std::string& path);
+    

@@ -36,7 +36,7 @@ def configure(cnf) :
     
 def build(bld):
 
-    libs = ['fuse3', 'fmt']
+    libs = ['fuse3', 'fmt', 'z', 'bz2']
 
     if sys.platform == 'linux' or sys.platform == 'linux2':
         libs.append('stdc++fs')
@@ -52,7 +52,7 @@ def build(bld):
         source=bld.path.ant_glob('src/{}/**/*.cpp'.format(APPNAME)),
         lib = libs, 
         use=['tartarus_includes', 'tartarus', 'codewrapper_includes', 'codewrapper',
-             'harpocrates_includes', 'harpocrates',
+             'harpocrates_includes', 'harpocrates', "ananke", "ananke_includes"
              'minerva_includes', 'minerva', '{}-includes'.format(APPNAME)]
     )
     

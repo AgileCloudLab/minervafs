@@ -1,5 +1,6 @@
 #include "../version/version.hpp"
-#include "../compression/compressor.hpp"
+
+#include <ananke/ananke.hpp>
 
 #include <nlohmann/json.hpp>
 
@@ -40,7 +41,10 @@ private:
     bool m_compression; 
 
     minerva::version m_version;
-    minerva::compressor m_compressor; 
+
+    ananke::algorithm m_compression_algorithm;
+    nlohmann::json m_compression_config;
+    size_t m_uncompressed_size; 
     
     std::map<std::vector<uint8_t>, size_t> m_in_memory_registry;
     
