@@ -68,32 +68,29 @@ namespace minerva
             }
         }
 
-        if (config.find("compression") != config.end())
-        {
-
+        if (config.contains("compression"))
+        {          
             auto compression_config = config["compression"].get<nlohmann::json>();
 
-            if (compression_config.find("basis_size") == compression_config.end())
+            if (!compression_config.contains("uncompressed_size"))
             {
-                m_compressor = minerva::compressor(compression_config["algorithm"].get<minerva::compressor_algorithm>());
+                // todo throw error
             }
-            else
+            
+            if (!compression_config.contains("algorithm"))
             {
-                auto algorithm = compression_config["algorithm"].get<minerva::compressor_algorithm>();
-                auto basis_size = compression_config["basis_size"].get<size_t>();
-
-                if (compression_config.find("level") != compression_config.end())
-                {
-                    m_compressor = minerva::compressor(algorithm, basis_size,
-                                                       compression_config["level"].get<uint8_t>());
-                }
-                else
-                {
-                    m_compressor = minerva::compressor(algorithm, basis_size);
-                }
-                
-
+                // Todo throw error
             }
+
+            if (!compression_config.contains("configuration"))
+            {
+                // TODO throw error
+            }
+
+            m_uncompressed_size = compression_config["uncompressed_size"].get<size_t>();
+            m_compression_algorithm = compression_config["algorithm"].get<ananke::algorithm>();
+            m_compression_config = compression_config["configuration"].get<nlohmann::json>(); 
+                       
             std::cout << "compression on" << std::endl;            
             m_compression = true; 
         }
@@ -168,11 +165,10 @@ namespace minerva
             auto basis = it->second;
             if (m_compression)
             {
-                std::cout << "ladidadi da" << std::endl;
-                m_compressor.compress(basis);
+                auto res = ananke::compress(m_compression_algorithm, m_compression_config, basis);
+                basis = res.second; 
             }
 
-//            tartarus::writers::vector_disk_writer(basis_path.string(), it->second, true);            
             tartarus::writers::vector_disk_writer(basis_path.string(), basis);
             if (m_in_memory)
             {
@@ -188,7 +184,7 @@ namespace minerva
             auto basis = tartarus::readers::vector_disk_reader(get_basis_path(it->first));
             if (m_compression)
             {
-                m_compressor.uncompress(basis);
+                basis = ananke::decompress(m_compression_algorithm, m_compression_config, basis, m_uncompressed_size); 
             }
             
             fingerprint_basis[it->first] = basis;

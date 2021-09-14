@@ -1,5 +1,5 @@
 {
-    "root_folder": "~/experiment_output/.minervafs",
+    "root_folder": "~/.minervafs",
     "code": {
         "m": 15,
         "n": 4096,
@@ -7,8 +7,11 @@
         "mgf": 256, 
         "code_type": 1
     },
-    "compression": {
-        "algorithm": 0,
-        "level": 9
+    "compression" : {
+      "uncompressed_size" : 4096,
+      "algorithm": 0,
+      "configuration": {
+        "level": 6
+      }
     }
 }
