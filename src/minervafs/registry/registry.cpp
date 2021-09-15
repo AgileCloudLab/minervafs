@@ -113,36 +113,23 @@ namespace minerva
     void registry::write_file(const std::string& path, const std::vector<uint8_t>& data)
     {
 
-        std::cout << "versioning: " << path << "\n";  
         if (m_versioning)
         {
             // TODO check version path
             m_version.store_version(path, data);
         }
+        // If versioning is enabled we overwrite the old version with the new version in the placeholder directory 
         tartarus::writers::vector_disk_writer(path, data);
-//         else
-//         {
-// //            tartarus::writers::vector_disk_writer(m_fileout_path + "/" + path, data, true);
-//             tartarus::writers::vector_disk_writer(path, data);
-//         }
         
     }
 
 
     std::vector<uint8_t> registry::load_file(const std::string& path)
     {
-        std::cout << "demo: " << path << "\n"; 
-        // if (m_versioning)
-        // {
-        //     return m_version.load_version(path);
-        // }
-        
+
         return tartarus::readers::vector_disk_reader(m_fileout_path + "/" + path);
         
     }
-
-    
-//    std::vector<uint8_t> registry::load_file(const std::string& path);    
 
     void registry::store_bases(const std::map<std::vector<uint8_t>, std::vector<uint8_t>>& fingerprint_basis)
     {
