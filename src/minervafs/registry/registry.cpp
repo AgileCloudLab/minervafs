@@ -112,6 +112,8 @@ namespace minerva
 
     void registry::write_file(const std::string& path, const std::vector<uint8_t>& data)
     {
+
+        std::cout << "versioning: " << path << "\n";  
         if (m_versioning)
         {
             // TODO check version path
@@ -129,10 +131,11 @@ namespace minerva
 
     std::vector<uint8_t> registry::load_file(const std::string& path)
     {
-        if (m_versioning)
-        {
-            return m_version.load_version(path);
-        }
+        std::cout << "demo: " << path << "\n"; 
+        // if (m_versioning)
+        // {
+        //     return m_version.load_version(path);
+        // }
         
         return tartarus::readers::vector_disk_reader(m_fileout_path + "/" + path);
         
